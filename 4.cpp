@@ -1,76 +1,96 @@
 #include<stdio.h>
 #include<stdlib.h>
-#define  ElemType int
+#define STACKINITSIZE 100
+#define STACKINCREMENT 10
+#define SElemType char
+typedef struct{
+    SElemType *base;
+	SElemType *top;
+	int stacksize;
+}SqStack;
 
-typedef struct LNode                    
-{  
-    int code;   //定义整型变量 code 用来存放序号 
-    int key;  //定义整型变量 key 用来存放密码 
-    struct LNode *next;                    
-}LNode,*LinkList; 
-
-
-void ListPrint(LinkList J)//将单链表La的数据元素从表头到表尾依次显示。
+void InitStack(SqStack &S)
 {
-	LinkList p=J->next;
-	while(p!=J)
-	{
-		printf("%d :",p->code);
-		printf("%d\n",p->key);
-		p=p->next;
-	}
-	printf("\n");
-}
+    S.base=(SElemType *)malloc(STACKINITSIZE*sizeof(SElemType));
+	if(!S.base) exit(-2);
+	S.top=S.base;
+	S.stacksize=STACKINITSIZE;
+}//初始化栈
 
-void CreatList(LinkList &Jr)
-//建立Joseph；
+void Push(SqStack &S,SElemType e)
 {
-	LinkList p,J1;
-	Jr=(LinkList)malloc(sizeof(LNode));
-	Jr->next=NULL;
-	for(int i=1;i<=7;i++)
+	if(S.top-S.base>=S.stacksize)
 	{
-		p=(LinkList)malloc(sizeof(LNode));
-		p->code=i;
-		p->next=NULL;
-		if(i==1) J1=p;Jr->next=p;Jr=p;
+		S.base=(SElemType *)realloc(S.base,(S.stacksize+STACKINCREMENT)*(sizeof(SElemType)));
+	    if(!S.base) exit(-2);
+	    S.top=S.base+S.stacksize;
+		S.stacksize+=STACKINCREMENT;
 	}
-    Jr->next=J1; p=J1;p->key=3;
-	p=p->next;p->key=1;
-	p=p->next;p->key=7;
-	p=p->next;p->key=2;
-	p=p->next;p->key=4;
-	p=p->next;p->key=8;
-	p=p->next;p->key=4;	
-}
+	*S.top++=e;
+}//入栈
 
-void Josephzzz(LinkList J,int m)
-{
-    LinkList p=J,q;
-	while(p->next!=p)
+void Pop(SqStack &S,SElemType &e)
+{ 
+    if(S.top==S.base) printf("错误!\n");
+	else
 	{
-        while(m-->1)
-		{
-			p=p->next;
-		}
-		m=p->next->key;
-		printf("%d ",p->next->code);
-		q=p->next;
-		p->next=q->next;
-		free(q);
+		e=*S.top--;
 	}
-	printf("%d ",p->code);
+}//出栈
+
+void GetTop(SqStack S,SElemType &e)
+{
+	if(S.base==S.top)
+	    printf("空栈错误！");
+    else
+		e=*(S.top-1);
+}//取栈顶元素
+
+int StackEmpty(SqStack S)
+{
+	if(S.base==S.top)
+		return 1;
+	else return 0;
+}//判断是否为空栈
+
+void VisitStack(SqStack S)
+{
+	if(S.base==S.top)
+		printf("空栈错误！");
+	while(S.base!=S.top)
+	{
+		printf("| %c  |\n",*(S.top-1));
+		S.top--;
+	}
+}//遍历栈
+
+int Check(SqStack S)
+{
+    char c,e;
+	printf("请输入栈表达式");
+	while((c=getchar())!='\n')
+	{
+	    if(c=='('||c=='[')
+		    Push(S,c);
+		else if(c==')'&&*(S.top-1)=='(')
+			Pop(S,e);
+		else if(c==']'&&*(S.top-1)=='[')
+			Pop(S,e);
+	}
+	if(StackEmpty(S))
+		return 1;
+	else 
+		return 0;
 }
 
 void main()
 {
-	LinkList Joseph;
-	CreatList(Joseph);
-	ListPrint(Joseph);
-
-	Josephzzz(Joseph,6);
-
- 
- 
-
+	int e;
+    SqStack S;
+	InitStack(S);
+	e=Check(S);
+	if(e)
+        printf("配对\n");
+	else
+		printf("不配对\n");
 }

@@ -1,162 +1,87 @@
 #include<stdio.h>
 #include<stdlib.h>
-#define  ElemType int
-typedef  struct  Node
-{
-    ElemType   data;      // 数据域
-    struct Node *next;    // 指针域
-}LNode, *LinkList;
+#define SElemType int
+typedef struct Snode{
+    SElemType data;
+	struct Snode *next;
+}Snode,*LinkStack;
 
-void ListPrint(LinkList La)//将单链表La的数据元素从表头到表尾依次显示。
+void InitStack(LinkStack &S)
 {
-	LinkList p=La->next;
-	while(p)
-	{
-		printf("%4d",p->data);
-		p=p->next;
-	}
-	printf("\n");
-}
+    S=NULL;
+}//初始化栈
 
-void CreatList(LinkList &La,int m)
-//依次输入m个数据，并依次建立各个元素结点，逐个插入到链表尾；建立带表头结点的单链表La；
+void Push(LinkStack &S,SElemType e)
 {
-	LinkList p,r;
-	La=(LinkList)malloc(sizeof(LNode));
-	La->next=NULL;
-	r=La;
-    for(int i=0;i<m;i++)
-	{
-		p=(LinkList)malloc(sizeof(LNode));
-		scanf("%d",&p->data);
-		p->next=NULL;r->next=p;r=p;
-	}
-	ListPrint(La);
-}
+	LinkStack p;
+	p=(LinkStack)malloc(sizeof(Snode));
+	p->data=e;
+	p->next=S;
+    S=p;
+}//入栈
 
-void ListDelete(LinkList &La, int n, ElemType &e) //删除链表的第n个元素，并用e返回其值。
+void Pop(LinkStack &S,SElemType &e)
 {
-	LinkList p=La,q;
-	for(int j=1;j<n&&p;j++,p=p->next);
-	if(!p||j>n)
-	{
-		printf("错误！\n");
-		e=0;
-	}
+	LinkStack p=S;
+    if(!S) printf("空栈错误!\n");
 	else
 	{
-     	q=p->next;
-	    e=p->next->data;
-    	p->next=p->next->next;
-	    free(q);
-    	ListPrint(La);
+		S=S->next;
+		free(p);
 	}
+}//出栈
 
-}
-
-int Search(LinkList La, ElemType x)//在表中查找是否存在某个元素x，如存在则返回x在表中的位置，否则返回0。
+void GetTop(LinkStack S,SElemType &e)
 {
-	LinkList p=La->next;
-	int i=1;
-	while(p)
+	if(!S)
+	    printf("空栈错误！");
+    else
 	{
-        if(x==p->data)
-		{
-			return i;
-		}
-        p=p->next;
-	    i++;
+		e=S->data;
 	}
-	return 0;
-}
+}//取栈顶元素
 
-LinkList AandBlist(LinkList La,LinkList Lb)
+
+int StackEmpty(LinkStack S)
 {
-    LinkList p=La->next,q=Lb->next,Lc,pc,r;
-	Lc=(LinkList)malloc(sizeof(LNode));
-	Lc->next=NULL;
-	r=Lc;
-	while(p||q)
-	{
-		if(q&&p&&p->data==q->data)
-		{
-			pc=(LinkList)malloc(sizeof(LNode));
-			pc->data=p->data;
-			pc->next=NULL;
-			r->next=pc;
-			r=pc;
-			p=p->next;q=q->next;
-		}
-		else if(q&&p&&p->data<q->data||!q)
-		{
-            pc=(LinkList)malloc(sizeof(LNode));
-			pc->data=p->data;
-			pc->next=NULL;
-			r->next=pc;
-			r=pc;
-			p=p->next;
-		}
-		else
-		{
-            pc=(LinkList)malloc(sizeof(LNode));
-			pc->data=q->data;
-			pc->next=NULL;
-			r->next=pc;
-			r=pc;
-			q=q->next;
-		}
-	}
-	return Lc;
-}
+	if(S)
+		return 1;
+	else return 0;
+}//判断是否为空栈
 
-LinkList AsubtractBlist(LinkList La,LinkList Lb)
+void VisitStack(LinkStack S)
 {
-    LinkList p=La->next,Ld,pd,r;
-	Ld=(LinkList)malloc(sizeof(LNode));
-	Ld->next=NULL;
-	r=Ld;
-	while(p)
+	LinkStack p=S;
+	if(!p)
+	    printf("空栈！");
+	else
 	{
-		if(!Search(Lb,p->data))
+	    while(p)
 		{
-			pd=(LinkList)malloc(sizeof(LNode));
-			pd->data=p->data;
-			pd->next=NULL;
-			r->next=pd;
-			r=pd;
-			p=p->next;
-
-		}
-		else
-		{
-            p=p->next;
+		    printf("| %3d  |\n",p->data);
+		    p=p->next;
 		}
 	}
-	return Ld;
-}
+}//遍历栈
 
 void main()
 {
-	int m;
-	LinkList La,Lb,Lc,Ld;
-	printf("请输入A链表的长度");
-	scanf("%d",&m);
-	CreatList(La,m);
+	LinkStack S;
+    int e,m;
+	InitStack(S);
+	printf("请输入栈元素的数量");
+    scanf("%d",&m);
+	while(m-->0)
+	{
+	printf("请输入入栈的元素");
+	scanf("%d",&e);Push(S,e);
+	}	
+	VisitStack(S);
 
-	printf("请输入B链表的长度");
-	scanf("%d",&m);
-	CreatList(Lb,m);
+	printf("顶端元素出栈后\n");
+	Pop(S,e);	VisitStack(S);
 
-	printf("\nC:");
-	Lc=AandBlist(La,Lb);
-    ListPrint(Lc);
-
-	printf("\nD:");
-	Ld=AsubtractBlist(La,Lb);
-    ListPrint(Ld);
- 
- 
-
+	GetTop(S,e);printf("栈顶元素e为%d\n",e);
+	if(StackEmpty(S)) printf("现在的栈为空栈\n");
+	else printf("现在的栈非空栈\n");
 }
-
- 

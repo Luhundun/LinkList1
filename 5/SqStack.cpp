@@ -1,14 +1,4 @@
-#include<stdio.h>
-#include<stdlib.h>
-#define STACKINITSIZE 100
-#define STACKINCREMENT 10
-#define SElemType int
-typedef struct{
-    SElemType *base;
-	SElemType *top;
-	int stacksize;
-}SqStack;
-
+#include"Stack.h"
 void InitStack(SqStack &S)
 {
     S.base=(SElemType *)malloc(STACKINITSIZE*sizeof(SElemType));
@@ -38,12 +28,9 @@ void Pop(SqStack &S,SElemType &e)
 	}
 }//出栈
 
-void GetTop(SqStack S,SElemType &e)
+SElemType GetTop(SqStack S)
 {
-	if(S.base==S.top)
-	    printf("空栈错误！");
-    else
-		e=*(S.top-1);
+	return *(S.top-1);
 }//取栈顶元素
 
 int StackEmpty(SqStack S)
@@ -64,23 +51,3 @@ void VisitStack(SqStack S)
 	}
 }//遍历栈
 
-void main()
-{
-	SqStack S;
-    int e,m;
-	InitStack(S);
-	printf("请输入栈元素的数量");
-    scanf("%d",&m);
-	while(m-->0)
-	{
-	printf("请输入入栈的元素");
-	scanf("%d",&e);Push(S,e);
-	}	
-	VisitStack(S);
-
-	printf("顶端元素出栈后\n");
-	Pop(S,e);	VisitStack(S);
-    GetTop(S,e);printf("栈顶元素为%d\n",e);
-	if(StackEmpty(S)) printf("现在的栈为空栈\n");
-	else printf("现在的栈非空栈\n");
-}
